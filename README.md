@@ -120,7 +120,7 @@ GROUP BY c.country, o.country, ord.orderNumber;
 
 | File | Description |
 |---|---|
-| `dashboard/classicmodelssales.pbix` | Full Power BI file |
+| <iframe title="classicmodelssales" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNGI3YTk0NzgtNjYxMC00ZDlkLWExMWQtMTZhNjQzOGEwZTljIiwidCI6ImVhZjYyNGM4LWEwYzQtNDE5NS04N2QyLTQ0M2U1ZDc1MTZjZCIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe> | Full Power BI file |
 | `sql/01_product_line_summary.sql` | Sales, orders, profit by product line |
 | `sql/02_country_sales.sql` | Sales by customer & office country |
 | `screenshots/` | Dashboard screenshots |
