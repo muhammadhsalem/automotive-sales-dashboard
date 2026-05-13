@@ -11,10 +11,11 @@ A 2-page interactive sales dashboard built on the Classic Models automotive data
 
 | Page | Description |
 |---|---|
-| <img width="1538" height="921" alt="Screenshot 2026-05-13 200854" src="https://github.com/user-attachments/assets/0cd77ce7-f907-4617-bf8e-a612fc173256" />
- | KPI cards, trend lines, bar/scatter/donut/column charts |
-| <img width="1538" height="925" alt="Screenshot 2026-05-13 200933" src="https://github.com/user-attachments/assets/6c1130b8-59f2-4d8c-bb52-0a340181ec92" />
- | Decomposition tree + MoM% & YTD sales table |
+![Page 1 — KPI cards and charts](screenshots/page1_overview.png)
+*Page 1 — KPI cards, product line bar, scatter, donut, column charts*
+
+![Page 2 — Decomposition tree](screenshots/page2_decomp.png)
+*Page 2 — Net profit decomposition tree + MoM/YTD sales table*
 
 ---
 
