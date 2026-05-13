@@ -1,4 +1,4 @@
-# Classic Models — Sales Performance Dashboard
+# Sales Performance Dashboard
 ### Tools: MySQL · Power BI · DAX
 
 A 2-page interactive sales dashboard built on the Classic Models automotive database — tracking revenue, profit, and performance across product lines and countries, with dynamic metric switching and MoM/YTD trend analysis.
@@ -116,11 +116,11 @@ GROUP BY c.country, o.country, ord.orderNumber;
 
 ---
 
-## Files
-
 | File | Description |
 |---|---|
-| <iframe title="classicmodelssales" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNGI3YTk0NzgtNjYxMC00ZDlkLWExMWQtMTZhNjQzOGEwZTljIiwidCI6ImVhZjYyNGM4LWEwYzQtNDE5NS04N2QyLTQ0M2U1ZDc1MTZjZCIsImMiOjh9" frameborder="0" allowFullScreen="true"></iframe> | Full Power BI file |
-| `sql/01_product_line_summary.sql` | Sales, orders, profit by product line |
-| `sql/02_country_sales.sql` | Sales by customer & office country |
-| `screenshots/` | Dashboard screenshots |
+| `screenshots/page1_overview.png` | KPI cards, product line bar, country charts |
+| `screenshots/page2_decomposition.png` | Net profit decomposition tree + MoM/YTD table |
+| `sql/01_product_line_summary.sql` | Revenue, profit, orders by product line |
+| `sql/02_country_sales.sql` | Sales by customer country and office |
+
+**[▶ View live dashboard on Power BI](https://app.powerbi.com/view?r=eyJrIjoiNGI3YTk0NzgtNjYxMC00ZDlkLWExMWQtMTZhNjQzOGEwZTljIiwidCI6ImVhZjYyNGM4LWEwYzQtNDE5NS04N2QyLTQ0M2U1ZDc1MTZjZCIsImMiOjh9)**
