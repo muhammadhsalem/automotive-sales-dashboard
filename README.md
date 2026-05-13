@@ -7,14 +7,10 @@ A 2-page interactive sales dashboard built on the Classic Models automotive data
 
 ## Dashboard Preview
 
-> Add screenshots after exporting from Power BI Desktop
-
-| Page | Description |
-|---|---|
-![Page 1 — KPI cards and charts](screenshots/page1_overview.png)
+![Page 1 — KPI cards and charts](screenshots/page1-overview.png)
 *Page 1 — KPI cards, product line bar, scatter, donut, column charts*
 
-![Page 2 — Decomposition tree](screenshots/page2_decomp.png)
+![Page 2 — Decomposition tree](screenshots/page2-decomp.png)
 *Page 2 — Net profit decomposition tree + MoM/YTD sales table*
 
 ---
