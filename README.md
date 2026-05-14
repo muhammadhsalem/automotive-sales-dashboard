@@ -18,9 +18,13 @@ A 2-page interactive sales dashboard built on the Classic Models automotive data
 ## Data Source
 
 - **Database:** Classic Models MySQL relational database (`classicmodels`)
-- **Main table used in Power BI:** `classicmodels sales_data_pb` (pre-aggregated view/table built from SQL queries)
-- **Key columns:** `orderNumber`, `productLine`, `customerCountry`, `officeCountry`, `customerName`, `sales`, `cost_of_sales`
-
+- **Tables:** 8 relational tables — `customers`, `employees`, `offices`, 
+  `orderdetails`, `orders`, `payments`, `productlines`, `products`
+- **Relationships:** Foreign keys linking orders → customers → employees 
+  → offices, and orderdetails → products → productlines
+- **Main working table:** `classicmodels sales_data_pb` — built by joining 
+  the above tables via SQL queries (see `sql/` folder)
+- **Full database script:** `sql/classicmodels_database.sql`
 ---
 
 ## Dashboard Pages
