@@ -1,16 +1,22 @@
-# Sales Performance Dashboard
-### Tools: MySQL · Power BI · DAX
+# Classic Models — Sales Analysis & Dashboard
+### Tools: MySQL · Excel (Pivot Tables) · Power BI · DAX
 
-A 2-page interactive sales dashboard built on the Classic Models automotive database — tracking revenue, profit, and performance across product lines and countries, with dynamic metric switching and MoM/YTD trend analysis.
+A full end-to-end analytics project on the Classic Models automotive 
+database — from raw relational data through SQL analysis and Excel 
+pivot tables to an interactive Power BI dashboard.
+
+---
+
+## Project Pipeline
 
 ---
 
 ## Dashboard Preview
 
-![Page 1 — KPI cards and charts](screenshots/page1-overview.png)
+![Page 1 — KPI cards and charts](screenshots/page1_overview.png)
 *Page 1 — KPI cards, product line bar, scatter, donut, column charts*
 
-![Page 2 — Decomposition tree](screenshots/page2-decomp.png)
+![Page 2 — Decomposition tree](screenshots/page2_decomposition.png)
 *Page 2 — Net profit decomposition tree + MoM/YTD sales table*
 
 ---
@@ -18,103 +24,89 @@ A 2-page interactive sales dashboard built on the Classic Models automotive data
 ## Data Source
 
 - **Database:** Classic Models MySQL relational database (`classicmodels`)
-- **Tables:** 8 relational tables — `customers`, `employees`, `offices`, 
+- **Tables:** 8 tables — `customers`, `employees`, `offices`, 
   `orderdetails`, `orders`, `payments`, `productlines`, `products`
-- **Relationships:** Foreign keys linking orders → customers → employees 
-  → offices, and orderdetails → products → productlines
-- **Main working table:** `classicmodels sales_data_pb` — built by joining 
-  the above tables via SQL queries (see `sql/` folder)
-- **Full database script:** `sql/classicmodels_database.sql`
+- **Full database script:** `sql/00_classicmodels_database.sql`
+
 ---
 
-## Dashboard Pages
+## Part 1 — SQL Analysis (8 Queries → Excel)
+
+Before building the dashboard, the database was analysed using 8 SQL 
+queries covering sales performance, customer behaviour, and operational 
+metrics. Results were loaded into Excel with pivot tables and charts.
+
+| File | Sheet in Excel | Analysis |
+|---|---|---|
+| `01_view_for_powerbi.sql` | Sales data | Master view: 2,997 rows joining all 8 tables — orders, products, customers, offices |
+| `02_sales_overview_by_product.sql` | Product Overview | Sales, cost, net profit by product line with 3 bar charts |
+| `03_office_sales.sql` | profit / customer-office | Sales & net profit % by country; customer country vs office country breakdown |
+| `04_credit_limit_segmentation.sql` | credit limit | Sales segmented into 4 credit limit bands (<$75k, $75–100k, $100–150k, $150k+) |
+| `05_customer_sales_change.sql` | consecutive order diff | LAG window function — tracks sales value change between each customer's consecutive orders |
+| `06_customers_over_credit_limit.sql` | — | Running total of sales vs payments using window functions to identify customers approaching or exceeding credit limit |
+| `07_late_shipping_analysis.sql` | — | Flags orders where shipped date + 3 days exceeds required date |
+| `08_product_line_couples.sql` | product couples | Self-join to find which product lines are most frequently ordered together |
+
+**Advanced SQL techniques used:** CTEs, Window Functions (LAG, LEAD, SUM OVER, ROW_NUMBER), self-joins, CASE statements, date arithmetic, subqueries
+
+---
+
+## Part 2 — Power BI Dashboard
+
+A MySQL view (`sales_data_pb`) was created from the master query and 
+imported into Power BI as the data source for the dashboard.
 
 ### Page 1 — Sales Overview
 
-**KPI Cards (with sparkline trend lines)**
-| Metric | Value shown |
-|---|---|
-| Total Sales | SUM of sales |
-| Total Orders | COUNT of orderNumber |
-| Average Sale Value | [Average Sale Value] measure |
-
-**Charts**
 | Visual | Type | Fields |
 |---|---|---|
+| Total Sales | KPI card + sparkline | SUM(sales) |
+| Total Orders | KPI card + sparkline | COUNT(orderNumber) |
+| Average Sale Value | KPI card + sparkline | [Average Sale Value] |
 | Sales by Product Line | Bar chart | productLine, [selected metric] |
-| Cost vs Revenue scatter | Scatter chart | [selected metric], cost_of_sales, orderNumber |
-| Sales by Office Country | Donut chart | officeCountry, [selected metric] |
-| Sales by Customer Country | Column chart | customerCountry, [selected metric] |
-
-**Dynamic metric switcher** — an action button slicer switches all visuals between Total Sales, Total Orders, and Average Sale Value simultaneously using the `[selected metric]` measure.
+| Cost vs Revenue | Scatter | [selected metric], cost_of_sales, orderNumber |
+| Sales by Office Country | Donut | officeCountry, [selected metric] |
+| Sales by Customer Country | Column | customerCountry, [selected metric] |
 
 ### Page 2 — Profit Decomposition
 
 | Visual | Type | Description |
 |---|---|---|
-| Decomposition tree | Tree visual | [Net Profit] broken down by customerCountry → productLine → customerName |
-| Sales trend table | Table | Sales, [Sum of sales MoM%], [Sum of sales YTD] over time |
+| Decomposition tree | Tree | [Net Profit] → customerCountry → productLine → customerName |
+| Sales trend table | Table | Sales, [Sum of sales MoM%], [Sum of sales YTD] |
 
----
-
-## DAX Measures
+### DAX Measures
 
 | Measure | Purpose |
 |---|---|
 | `[Average Sale Value]` | Total sales ÷ total orders |
 | `[Net Profit]` | Sales minus cost_of_sales |
-| `[Sum of sales MoM%]` | Month-over-month % change in sales |
+| `[Sum of sales MoM%]` | Month-over-month % change |
 | `[Sum of sales YTD]` | Year-to-date cumulative sales |
-| `[selected metric]` | Dynamic switcher — returns chosen KPI based on slicer selection |
-
----
-
-## SQL Queries
-
-The `classicmodels sales_data_pb` table was built by querying the Classic Models relational database. Sample queries used:
-
-```sql
--- Total sales, orders, and profit by product line
-SELECT
-  productLine,
-  COUNT(DISTINCT od.orderNumber)          AS total_orders,
-  SUM(od.quantityOrdered * od.priceEach)  AS total_sales,
-  SUM(od.quantityOrdered * od.priceEach)
-    - SUM(od.quantityOrdered * p.buyPrice) AS net_profit
-FROM orderdetails od
-JOIN products p ON od.productCode = p.productCode
-GROUP BY productLine
-ORDER BY total_sales DESC;
-```
-
-```sql
--- Sales by customer country with office mapping
-SELECT
-  c.country        AS customerCountry,
-  o.country        AS officeCountry,
-  ord.orderNumber,
-  SUM(od.quantityOrdered * od.priceEach)  AS sales,
-  SUM(od.quantityOrdered * p.buyPrice)    AS cost_of_sales
-FROM orders ord
-JOIN customers c  ON ord.customerNumber = c.customerNumber
-JOIN employees e  ON c.salesRepEmployeeNumber = e.employeeNumber
-JOIN offices o    ON e.officeCode = o.officeCode
-JOIN orderdetails od ON ord.orderNumber = od.orderNumber
-JOIN products p   ON od.productCode = p.productCode
-GROUP BY c.country, o.country, ord.orderNumber;
-```
-
-> See `/sql` folder for all query files.
+| `[selected metric]` | Dynamic switcher across all visuals |
 
 ---
 
 ## Key Insights
 
-- **Classic Cars and Vintage Cars** are the top-performing product lines, accounting for 55%+ of total revenue
-- The **decomposition tree** allows drill-down from country → product line → individual customer to pinpoint revenue drivers
-- **MoM% and YTD measures** reveal seasonal sales patterns — strong Q4 performance across most years
-- Several customer countries contribute less than 5% of total sales — flagged as underperforming markets
+- **Classic Cars and Vintage Cars** account for 55%+ of total revenue
+- **3 markets** contribute less than 5% of total sales
+- Credit limit segmentation reveals highest sales volume comes from 
+  the **$100k–$150k** customer band
+- LAG analysis shows significant variance in consecutive order values 
+  — some customers show 3x swings between orders
+- Product line coupling analysis shows **Classic Cars** appear in the 
+  majority of multi-line orders
 
 ---
+
+## Files
+
+| File/Folder | Description |
+|---|---|
+| `sql/` | All 8 SQL query files + full database script |
+| `Sales.xlsx` | Excel workbook: 7 sheets with pivot tables and charts |
+| `screenshots/` | Power BI dashboard screenshots |
+
 
 **[▶ View live dashboard on Power BI](https://app.powerbi.com/view?r=eyJrIjoiNGI3YTk0NzgtNjYxMC00ZDlkLWExMWQtMTZhNjQzOGEwZTljIiwidCI6ImVhZjYyNGM4LWEwYzQtNDE5NS04N2QyLTQ0M2U1ZDc1MTZjZCIsImMiOjh9)**
